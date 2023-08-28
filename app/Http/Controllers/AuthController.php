@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Testing\Fluent\Concerns\Has;
 use Illuminate\Validation\Rules\Password;
+use App\Services\PostRegistrationService;
 
 /**
  * Class AuthController
@@ -22,6 +23,13 @@ use Illuminate\Validation\Rules\Password;
  */
 class AuthController extends Controller
 {
+    protected $postRegistrationService;
+
+    public function __construct(PostRegistrationService $postRegistrationService)
+    {
+        $this->postRegistrationService = $postRegistrationService;
+    }
+
     public function register(Request $request)
     {
         $data = $request->validate([
@@ -39,7 +47,10 @@ class AuthController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password'])
-        ]);
+        ]);        
+
+        $this->postRegistrationService->handle($user);
+        
         $token = $user->createToken('main')->plainTextToken;
 
         return response([

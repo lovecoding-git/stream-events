@@ -7,9 +7,16 @@ use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
 use Exception;
 use App\Models\User;
+use App\Services\PostRegistrationService;
 
 class OauthLoginController extends Controller
 {
+    protected $postRegistrationService;
+
+    public function __construct(PostRegistrationService $postRegistrationService)
+    {
+        $this->postRegistrationService = $postRegistrationService;
+    }
 
     public function redirectToGoogle() {
         $url = Socialite::driver('google')->stateless()->redirect()->getTargetUrl();
@@ -34,6 +41,8 @@ class OauthLoginController extends Controller
                     'google_id'=> $user->id,
                     'password' => bcrypt('password')
                 ]);
+
+                $this->postRegistrationService->handle($newUser);
       
                 Auth::login($newUser);
       
