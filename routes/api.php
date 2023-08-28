@@ -3,7 +3,7 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\OauthLoginController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -31,3 +31,5 @@ Route::post('/survey/{survey}/answer', [\App\Http\Controllers\SurveyController::
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::get('/redirect/google',  [OauthLoginController::class, 'redirectToGoogle']);
+Route::get('/authorized/google/callback', [OauthLoginController::class, 'handleGoogleCallback']);

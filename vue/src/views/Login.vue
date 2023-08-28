@@ -98,6 +98,10 @@
         Sign in
       </TButtonLoading>
     </div>
+
+    <div class="flex items-center justify-end mt-4">
+      <img src="https://developers.google.com/identity/images/btn_google_signin_dark_normal_web.png" style="margin-left: 3em;" @click="socialLogin">
+    </div>  
   </form>
 </template>
 
@@ -108,6 +112,7 @@ import { useRouter } from "vue-router";
 import { ref } from "vue";
 import Alert from "../components/Alert.vue";
 import TButtonLoading from "../components/core/TButtonLoading.vue";
+import { onMounted } from "vue";
 
 const router = useRouter();
 
@@ -118,12 +123,48 @@ const user = {
 let loading = ref(false);
 let errorMsg = ref("");
 
+onMounted(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+  if (token) {
+    storeTokenAndUser(token);
+  }
+});
+
+function storeTokenAndUser(token) {
+  store.dispatch('storeTokenAndUser', token)
+    .then(() => {
+      router.push({ name: 'Dashboard' });
+    })
+    .catch(err => {
+      errorMsg.value = 'Error storing token and user details.';
+    });
+}
+
 function login(ev) {
   ev.preventDefault();
 
   loading.value = true;
   store
     .dispatch("login", user)
+    .then(() => {
+      loading.value = false;
+      router.push({
+        name: "Dashboard",
+      });
+    })
+    .catch((err) => {
+      loading.value = false;
+      errorMsg.value = err.response.data.error;
+    });
+}
+
+function socialLogin(ev) {
+  ev.preventDefault();
+
+  loading.value = true;
+  store
+    .dispatch("socialLogin")
     .then(() => {
       loading.value = false;
       router.push({

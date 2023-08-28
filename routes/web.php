@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OauthLoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/api/redirect/google',  [OauthLoginController::class, 'redirectToGoogle']);
+Route::get('/api/authorized/google/callback', [OauthLoginController::class, 'handleGoogleCallback']);

@@ -53,6 +53,25 @@ const store = createStore({
           return response;
         })
     },
+    async socialLogin({ commit }) {
+      try {
+        const response = await axiosClient.get('/redirect/google');
+        window.location.href = response.data.url;  // This will redirect the user to Oauth's login page
+      } catch (err) {
+        throw new Error(err.response.data.error);
+      }
+    },
+    storeTokenAndUser({commit}, token) {
+      commit('setToken', token);
+      // Use the token to fetch the user's details from the backend, then commit it
+      axiosClient.get('/user', { headers: { 'Authorization': `Bearer ${token}` } })
+          .then(response => {
+              commit('setUser', response.data);
+          })
+          .catch(error => {
+              console.error('Error fetching user details:', error);
+          });
+  },
     getUser({commit}) {
       return axiosClient.get('/user')
       .then(res => {
