@@ -17,6 +17,9 @@ module.exports = {
       animation: {
         'fade-in-down': "fade-in-down 0.2s ease-in-out both",
       },
+      backgroundColor: {
+        'light-blue-200': '#B3E0FF',
+      },
     },
   },
   plugins: [require("@tailwindcss/forms")],

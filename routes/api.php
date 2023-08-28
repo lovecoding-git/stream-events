@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OauthLoginController;
+use App\Http\Controllers\EventController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -23,6 +24,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('/survey', \App\Http\Controllers\SurveyController::class);
 
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index']);
+
+    Route::put('/events/{id}/{model}/markAsRead',  [EventController::class, 'markAsRead']);
+    Route::get('/events',  [EventController::class, 'fetchEvents']);
 });
 
 Route::get('/survey-by-slug/{survey:slug}', [\App\Http\Controllers\SurveyController::class, 'showForGuest']);

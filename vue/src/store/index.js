@@ -25,7 +25,15 @@ const store = createStore({
       show: false,
       type: 'success',
       message: ''
-    }
+    },
+    events: {
+      loading: false,
+      data: [],
+      currentPage: 1,
+      firstPage: 1,
+      lastPage: null,
+      hasMore: true,
+    },
   },
   getters: {},
   actions: {
@@ -159,6 +167,39 @@ const store = createStore({
     saveSurveyAnswer({commit}, {surveyId, answers}) {
       return axiosClient.post(`/survey/${surveyId}/answer`, {answers});
     },
+    loadMoreEvents({ commit, state }, limit) {
+      commit('eventsLoading', true);
+      const currentPage = state.events.currentPage;
+      if(state.events.hasMore) {
+        return axiosClient.get(`/events?page=${currentPage}&limit=${limit}`)
+          .then((res) => {
+            commit('eventsLoading', false);
+            commit('appendEvents', res.data);
+            commit('incrementPage');
+            if(res.data.data.length == 0) {
+              commit('noMore');
+            }
+          })
+          .catch(error => {
+            commit('eventsLoading', false);
+            console.error("Error fetching events:", error);
+          });
+      }else {
+        commit('eventsLoading', false);
+      }
+    },
+    markEventAsRead({ commit }, { id, model }) {
+      return axiosClient.put(`/events/${id}/${model}/markAsRead`)
+        .then((res) => {
+          if (res.status === 200) {
+            commit('setEventAsRead', { id, model });
+          }
+          return res;
+        })
+        .catch(error => {
+          return error;
+        });
+    },
   },
   mutations: {
     logout: (state) => {
@@ -200,6 +241,26 @@ const store = createStore({
       setTimeout(() => {
         state.notification.show = false;
       }, 3000)
+    },
+    eventsLoading: (state, loading) => {
+      state.events.loading = loading;
+    },
+    appendEvents(state, newEvents) {
+      state.events.data.push(...newEvents.data);
+      state.events.lastPage = newEvents.data.last_page;
+    },
+    incrementPage(state) {
+      state.events.currentPage++;
+    },
+    noMore(state) {
+      state.events.hasMore = false;
+    },
+    setEventAsRead(state, { id, model }) {
+      const eventIndex = state.events.data.findIndex(e => e.id === id && e.model_name === model);
+      if (eventIndex !== -1) {
+        const event = { ...state.events.data[eventIndex], is_read: 1 }; 
+        state.events.data.splice(eventIndex, 1, event); 
+      }
     },
   },
   modules: {},
