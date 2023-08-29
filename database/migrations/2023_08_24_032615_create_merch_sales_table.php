@@ -16,7 +16,7 @@ class CreateMerchSalesTable extends Migration
         Schema::create('merch_sales', function (Blueprint $table) {
             $table->id();
             $table->string('item_name', 100);
-            $table->integer('amount');
+            $table->integer('count');
             $table->float('price');
             $table->string('buyer_name', 100);
             $table->unsignedBigInteger('user_id');

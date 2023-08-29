@@ -21,12 +21,12 @@ class MerchSaleFactory extends Factory
 
         return [
             'item_name'  => $this->faker->randomElement($itemNames),
-            'amount'     => $this->faker->numberBetween(1, 10),
+            'count'      => $this->faker->numberBetween(1, 10),
             'price'      => $this->faker->randomFloat(2, 5, 200),
             'buyer_name' => $this->faker->name,
             'created_at' => $creation_time,
             'updated_at' => $creation_time,
-            
+
         ];
     }
 }

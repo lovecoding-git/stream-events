@@ -9,6 +9,8 @@ class Donation extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['donor_name', 'amount', 'currency', 'donation_message', 'user_id', 'is_read'];
+
     public function user()
     {
         return $this->belongsTo(User::class);

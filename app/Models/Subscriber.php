@@ -9,6 +9,8 @@ class Subscriber extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name', 'tier', 'user_id', 'is_read'];
+
     public function user()
     {
         return $this->belongsTo(User::class);

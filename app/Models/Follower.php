@@ -9,11 +9,7 @@ class Follower extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'user_id',
-        'is_read',
-    ];
+    protected $fillable = ['name', 'user_id', 'is_read'];
 
     public function user()
     {

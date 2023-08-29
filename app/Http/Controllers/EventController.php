@@ -38,6 +38,7 @@ class EventController extends Controller
 
         $follwers = Follower::my()->select('id', 'created_at', 'name',
             DB::raw('null as tier'),
+            DB::raw('0 as count'),
             DB::raw('null as amount'),
             DB::raw('null as currency'),
             DB::raw('null as item_name'),
@@ -47,6 +48,7 @@ class EventController extends Controller
 
         $subscribers = Subscriber::my()->select('id', 'created_at', 'name',
             DB::raw('tier as tier'),
+            DB::raw('0 as count'),
             DB::raw('null as amount'),
             DB::raw('null as currency'),
             DB::raw('null as item_name'),
@@ -56,8 +58,9 @@ class EventController extends Controller
 
         $merchsales = MerchSale::my()->select('id', 'created_at',
             DB::raw('buyer_name as name'),
-            DB::raw('amount as amount'),
             DB::raw('null as tier'),
+            DB::raw('count as count'),
+            DB::raw('null as amount'),
             DB::raw('null as currency'),
             DB::raw('item_name as item_name'),
             DB::raw('price as price'),
@@ -66,8 +69,9 @@ class EventController extends Controller
 
         $donations = Donation::my()->select('id', 'created_at',
             DB::raw('donor_name as name'),
-            DB::raw('amount as amount'),
             DB::raw('null as tier'),
+            DB::raw('0 as count'),
+            DB::raw('amount as amount'),
             DB::raw('currency as currency'),
             DB::raw('null as item_name'),
             DB::raw('null as price'),
@@ -115,7 +119,7 @@ class EventController extends Controller
                 ->sum('amount');
 
             $merchSalesRevenue = MerchSale::my()->where('created_at', '>=', $startDate)
-                ->sum('price');
+                ->sum(DB::raw('merch_sales.price * merch_sales.count'));
 
             $tierPricing = [
                 'tier1' => 5,
@@ -132,7 +136,7 @@ class EventController extends Controller
             $totalRevenue = $donationRevenue + $merchSalesRevenue + $subscriberRevenue;
 
             $topSellingItems = MerchSale::where('created_at', '>=', $startDate)
-                ->select('item_name', DB::raw('SUM(price) as total_sales'))
+                ->select('item_name', DB::raw('SUM(price * count) as total_sales'))
                 ->groupBy('item_name')
                 ->orderBy('total_sales', 'desc')
                 ->take(3)

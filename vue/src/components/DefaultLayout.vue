@@ -54,11 +54,6 @@
                       >
                         {{ user.name }}
                       </div>
-                      <div
-                        class="text-sm font-medium leading-none text-gray-400"
-                      >
-                        {{ user.email }}
-                      </div>
                     </div>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

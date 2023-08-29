@@ -1,7 +1,7 @@
 <template class="w-full">
   <PageComponent title="Dashboard">
     <div v-if="loading" class="flex justify-center">Loading...</div>
-    <div v-else>      
+    <div v-else>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-gray-700">
         <DashboardCard class="order-1 lg:order-2 border min-h-[150px]" style="animation-delay: 0.1s">
           <div class="text-gray-600 text-center py-2 font-bold">
@@ -43,7 +43,7 @@
             <li v-for="(event, index) in events" :key="event.id"
               :class="[event.is_read ? 'bg-white' : 'bg-light-blue-200', 'border', 'border-gray-300', 'border-t', 'border-b', 'mb-2', 'cursor-pointer']"
                 @click="markEventAsRead(event.id, event.model_name)">
-                {{ renderEventMessage(event) }}
+                {{ renderEventMessage(event, index) }}
             </li>
             <div v-if="eventsLoading" class="flex justify-center mt-2">Loading...</div>
           </ul>
@@ -84,16 +84,16 @@ function markEventAsRead(id, model) {
   store.dispatch("markEventAsRead", { id, model });
 }
 
-function renderEventMessage(event) {
+function renderEventMessage(event, index) {
     switch (event.model_name) {
       case 'Follower':
-        return `${event.name} followed you!`;
+        return `${index}. ${event.name} followed you!`;
       case 'Subscriber':
-        return `${event.name} (${event.tier}) subscribed to you!`;
+        return `${index}. ${event.name} (${event.tier}) subscribed to you!`;
       case 'Donation':
-        return `${event.name} donated ${event.amount} ${event.currency} to you! \n “Thank you for being awesome”`;
+        return `${index}. ${event.name} donated ${event.amount} ${event.currency} to you! \n “Thank you for being awesome”`;
       case 'MerchSale':
-        return `${event.name} bought ${event.item_name} from you for ${event.price} USD!`;
+        return `${index}. ${event.name} bought ${event.item_name} from you for ${event.price} USD!`;
       default:
         return '';
     }
