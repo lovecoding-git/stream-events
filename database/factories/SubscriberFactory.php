@@ -20,7 +20,7 @@ class SubscriberFactory extends Factory
         
         return [
             'name' => $this->faker->name,
-            'tier' => $this->faker->randomElement([1, 2, 3]),
+            'tier' => $this->faker->randomElement(['tier1', 'tier2', 'tier3']),
             'created_at' => $creation_time,
             'updated_at' => $creation_time,
         ];

@@ -37,7 +37,7 @@ class EventController extends Controller
         $limit = $request->get('limit', 50);
 
         $follwers = Follower::my()->select('id', 'created_at', 'name',
-            DB::raw('null as tire'),
+            DB::raw('null as tier'),
             DB::raw('null as amount'),
             DB::raw('null as currency'),
             DB::raw('null as item_name'),
@@ -53,19 +53,21 @@ class EventController extends Controller
             DB::raw('null as price'),
             DB::raw('is_read as is_read'),
             DB::raw('"Subscriber" as model_name'));
+
         $merchsales = MerchSale::my()->select('id', 'created_at',
             DB::raw('buyer_name as name'),
             DB::raw('amount as amount'),
-            DB::raw('null as tire'),
+            DB::raw('null as tier'),
             DB::raw('null as currency'),
             DB::raw('item_name as item_name'),
             DB::raw('price as price'),
             DB::raw('is_read as is_read'),
             DB::raw('"MerchSale" as model_name'));
+
         $donations = Donation::my()->select('id', 'created_at',
             DB::raw('donor_name as name'),
             DB::raw('amount as amount'),
-            DB::raw('null as tire'),
+            DB::raw('null as tier'),
             DB::raw('currency as currency'),
             DB::raw('null as item_name'),
             DB::raw('null as price'),
@@ -100,5 +102,51 @@ class EventController extends Controller
         $record->save();
 
         return response()->json(['message' => 'Marked as read']);
+    }
+
+    public function getDashboardData(Request $request)
+    {
+        $cacheKey = "user_" . auth()->id() . "_dashboard_data";
+
+        return Cache::remember($cacheKey, 60, function () {
+            $startDate = Carbon::now()->subDays(30);
+
+            $donationRevenue = Donation::my()->where('created_at', '>=', $startDate)
+                ->sum('amount');
+
+            $merchSalesRevenue = MerchSale::my()->where('created_at', '>=', $startDate)
+                ->sum('price');
+
+            $tierPricing = [
+                'tier1' => 5,
+                'tier2' => 10,
+                'tier3' => 15
+            ];
+
+            $subscriberRevenue = Subscriber::my()->where('created_at', '>=', $startDate)
+                ->get()
+                ->reduce(function ($carry, $subscriber) use ($tierPricing) {
+                    return $carry + $tierPricing[(string)$subscriber->tier];
+                }, 0);
+
+            $totalRevenue = $donationRevenue + $merchSalesRevenue + $subscriberRevenue;
+
+            $topSellingItems = MerchSale::where('created_at', '>=', $startDate)
+                ->select('item_name', DB::raw('SUM(price) as total_sales'))
+                ->groupBy('item_name')
+                ->orderBy('total_sales', 'desc')
+                ->take(3)
+                ->get();
+
+            $totalFollowers = Follower::my()->where('created_at', '>=', $startDate)
+                ->get()
+                ->count();
+
+            return [
+                'totalRevenue' => $totalRevenue,
+                'totalFollowers' => $totalFollowers,
+                'topSellingItems' => $topSellingItems,
+            ];
+        });
     }
 }

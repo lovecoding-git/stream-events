@@ -22,10 +22,6 @@ Built with these technologies for [YouTube Video](https://youtu.be/WLQDpY7lOLg)
 ## Requirements
 You need to have PHP version **8.0** or above. Node.js version **12.0** or above.
 
-## Demo
-https://yoursurveys.xyz
-
-
 ## Installation
 
 #### Backend
@@ -42,6 +38,18 @@ https://yoursurveys.xyz
 3. Copy `vue/.env.example` into `vue/.env` and specify API URL
 4. Start frontend by running `npm run dev`
 5. Open http://localhost:3000
+
+#### Google Socialite Configuration
+
+To enable login using Google, you need to get your client ID and client secret from Google Developer Console. For detailed instructions, follow this [link](https://techsolutionstuff.com/post/laravel-8-socialite-login-with-google-account).
+
+Once you have the credentials, add them to your `.env` file:
+
+Replace `your_google_client_id_here` with your Google client ID and `your_google_client_secret_here` with your Google client secret.
+
+## License
+
+The project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
 
 ## License

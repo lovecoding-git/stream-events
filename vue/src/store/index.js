@@ -173,7 +173,9 @@ const store = createStore({
       if(state.events.hasMore) {
         return axiosClient.get(`/events?page=${currentPage}&limit=${limit}`)
           .then((res) => {
-            commit('eventsLoading', false);
+            commit('eventsLoading', false);            
+            console.log("Appending events:=======>");
+            console.log(res.data)
             commit('appendEvents', res.data);
             commit('incrementPage');
             if(res.data.data.length == 0) {

@@ -23,7 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::resource('/survey', \App\Http\Controllers\SurveyController::class);
 
-    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index']);
+    Route::get('/dashboard', [\App\Http\Controllers\EventController::class, 'getDashboardData']);
 
     Route::put('/events/{id}/{model}/markAsRead',  [EventController::class, 'markAsRead']);
     Route::get('/events',  [EventController::class, 'fetchEvents']);
